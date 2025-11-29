@@ -1,5 +1,6 @@
 // paises-game.js
 // Lógica del minijuego País → Capital (modo "Escríbelo")
+// Ahora con dificultad + modo de juego (aleatorio / todos)
 
 function normalizeText(str) {
   return str
@@ -18,11 +19,15 @@ function shuffle(array) {
   return arr;
 }
 
-function createPaisesGame(difficulty) {
+/**
+ * difficulty: "easy" | "medium" | "hard"
+ * mode: "random" | "all"
+ */
+function createPaisesGame(difficulty, mode) {
   const container = document.getElementById("paisesGameArea");
   container.innerHTML = "";
 
-  // Filtrar preguntas según dificultad
+  // 1. Filtrar por dificultad
   let pool = countries.filter(c => {
     if (difficulty === "easy") return c.nivel === "easy";
     if (difficulty === "medium") return c.nivel === "easy" || c.nivel === "medium";
@@ -35,18 +40,38 @@ function createPaisesGame(difficulty) {
     return;
   }
 
-  pool = shuffle(pool).slice(0, 10); // hasta 10 preguntas
+  // 2. Aleatorizar siempre
+  pool = shuffle(pool);
+
+  // 3. Según modo, usar todos o solo 10
+  if (mode === "random") {
+    pool = pool.slice(0, Math.min(10, pool.length));
+  }
+
   let currentIndex = 0;
   let score = 0;
 
   const header = document.createElement("div");
   header.className = "game-header";
+
   const qCount = document.createElement("div");
+
   const tags = document.createElement("div");
+  const modeLabel =
+    mode === "all" ? "Modo: Todos los países" : "Modo: Aleatorio (10)";
   tags.innerHTML =
-    '<span class="tag">País → Capital</span><span class="tag">Modo: Escríbelo</span>';
+    '<span class="tag">País → Capital</span>' +
+    '<span class="tag">' + modeLabel + '</span>';
+
   header.appendChild(qCount);
   header.appendChild(tags);
+
+  // Barra de progreso
+  const progressOuter = document.createElement("div");
+  progressOuter.className = "progress-outer";
+  const progressInner = document.createElement("div");
+  progressInner.className = "progress-inner";
+  progressOuter.appendChild(progressInner);
 
   const questionText = document.createElement("div");
   questionText.className = "question-text";
@@ -61,10 +86,18 @@ function createPaisesGame(difficulty) {
   scoreLine.className = "score-line";
 
   container.appendChild(header);
+  container.appendChild(progressOuter);
   container.appendChild(questionText);
   container.appendChild(controls);
   container.appendChild(feedback);
   container.appendChild(scoreLine);
+
+  function updateProgress() {
+    const pct = pool.length
+      ? Math.round((currentIndex / pool.length) * 100)
+      : 0;
+    progressInner.style.width = pct + "%";
+  }
 
   function renderQuestion() {
     if (currentIndex >= pool.length) {
@@ -99,6 +132,7 @@ function createPaisesGame(difficulty) {
 
     input.focus();
     scoreLine.textContent = "Aciertos: " + score + " / " + pool.length;
+    updateProgress();
 
     function checkAnswer() {
       const value = normalizeText(input.value);
@@ -107,11 +141,11 @@ function createPaisesGame(difficulty) {
       const correct = q.capital;
 
       if (value === normalizeText(correct)) {
-        feedback.textContent = "¡Correcto!";
+        feedback.textContent = "¡Correcto! ✅";
         feedback.className = "feedback correct";
         score++;
       } else {
-        feedback.textContent = "Incorrecto. La respuesta correcta es: " + correct + ".";
+        feedback.textContent = "Incorrecto. La respuesta correcta es: " + correct + " ❌";
         feedback.className = "feedback incorrect";
       }
 
@@ -173,7 +207,7 @@ function createPaisesGame(difficulty) {
     btnRepetir.className = "btn btn-primary";
     btnRepetir.textContent = "Jugar de nuevo";
     btnRepetir.addEventListener("click", function () {
-      createPaisesGame(difficulty);
+      createPaisesGame(difficulty, mode);
     });
 
     const btnMenu = document.createElement("button");
