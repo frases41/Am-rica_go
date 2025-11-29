@@ -213,7 +213,7 @@
     .game-config {
       margin-top: 10px;
       margin-bottom: 16px;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-radius: 14px;
       border: 1px solid rgba(148, 163, 184, 0.5);
       background: rgba(15, 23, 42, 0.9);
@@ -347,6 +347,23 @@
       margin-bottom: 10px;
     }
 
+    /* Barra de progreso */
+    .progress-outer {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .progress-inner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #3b82f6);
+      transition: width 0.3s ease;
+    }
+
     @media (max-width: 768px) {
       main {
         padding: 0;
@@ -418,22 +435,31 @@
         </header>
         <div class="card-body">
           <p>
-            Se mostrará el nombre de un <strong>país</strong> y deberás escribir su
-            <strong>capital</strong>. Al final verás tu puntaje.
+            1️⃣ Elige <strong>dificultad</strong> · 2️⃣ Elige <strong>modo</strong> · 3️⃣ Pulsa <strong>Empezar minijuego</strong>.
           </p>
 
           <div class="game-config">
             <h3>Dificultad</h3>
             <p class="small-text">
-              Elige el nivel. Fácil = países más conocidos, Difícil = países menos obvios.
+              Fácil = países más conocidos · Difícil = países menos obvios.
             </p>
             <div class="pill-row" id="paisesDifficulty">
               <button class="pill-btn" data-difficulty="easy">Fácil</button>
               <button class="pill-btn" data-difficulty="medium">Intermedio</button>
               <button class="pill-btn" data-difficulty="hard">Difícil</button>
             </div>
+
+            <h3>Modo de juego</h3>
+            <p class="small-text">
+              Aleatorio = 10 preguntas · Todos los países = recorre toda la lista.
+            </p>
+            <div class="pill-row" id="paisesMode">
+              <button class="pill-btn" data-mode="random">Aleatorio (10 preguntas)</button>
+              <button class="pill-btn" data-mode="all">Todos los países</button>
+            </div>
+
             <p class="small-text" id="paisesSummary">
-              Selecciona una dificultad y luego pulsa en <strong>“Empezar minijuego”</strong>.
+              Selecciona dificultad y modo, luego pulsa en <strong>“Empezar minijuego”</strong>.
             </p>
             <button class="btn btn-primary" id="startPaisesGame">
               ▶ Empezar minijuego
